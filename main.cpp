@@ -12,7 +12,7 @@ typedef int32_t i32;
 typedef int16_t i16;
 typedef int8_t i8;
 
-#define ROSTER_SIZE 100
+#define ROSTER_SIZE 10
 
 float roster[ROSTER_SIZE];
 
@@ -61,17 +61,16 @@ int main(int argc, char ** argv)
 {
    srand(time(0));
    for (i32 i = 0; i < ROSTER_SIZE; i++) {
-      roster[i] = frand();
+      roster[i] = frand() * 1000;
    }
    qsort(roster, ROSTER_SIZE, sizeof(float), cmpfloat);
    {
-#if 0
-      // turns out normalizing the points isn't actually that important, probably.
+#if 1
       float rosternorm = 0;
       for (i32 i = 0; i < ROSTER_SIZE; i++) {
-         rosternorm += (roster[i] * roster[i]);
+         rosternorm += (roster[i]);
       }
-      rosternorm = 1.f/(sqrtf(rosternorm));
+      rosternorm = 1.f/(rosternorm);
       for (i32 i = 0; i < ROSTER_SIZE; i++) {
          roster[i] *= rosternorm;
       }
@@ -88,46 +87,77 @@ int main(int argc, char ** argv)
    printf("\n%4.2f points total\n", roster_total);
    {
       //normal turn sequence
+      i32 roster_pick;
       player players[2] = {};
-      i32 roster_pick = ROSTER_SIZE - 1;
-      for (i32 i = 0; i < ROSTER_SIZE; i++) {
-         player * cur = players + (i % 2);
+      {
+         roster_pick = ROSTER_SIZE - 1;
+         for (i32 i = 0; i < ROSTER_SIZE; i++) {
+            u32 ply = (i % 2);
+            player * cur = players + ply;
 #if (ROSTER_SIZE <= 10)
-         printf("%d picked %f\n", i%2, roster[roster_pick]);
+            printf("%d picked %f\n", ply, roster[roster_pick]);
 #endif
-         cur->pick(roster[roster_pick]);
-         roster_pick--;
+            cur->pick(roster[roster_pick]);
+            roster_pick--;
+         }
+         printf("Normal turn sequence result:\n");
+         printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
+         printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
       }
-      printf("Normal turn sequence result:\n");
-      printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
-      printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
-      players[0].reset();
-      players[1].reset();
-      roster_pick = ROSTER_SIZE - 1;
-      for (i32 i = 0; i < ROSTER_SIZE; i++) {
-         player * cur = players + (countbits(i) % 2);
+      {
+         players[0].reset();
+         players[1].reset();
+         roster_pick = ROSTER_SIZE - 1;
+         for (i32 i = 0; i < ROSTER_SIZE; i++) {
+            u32 ply = (countbits(i) % 2);
+            player * cur = players + ply;
 #if (ROSTER_SIZE <= 10)
-         printf("%d picked %f\n", i%2, roster[roster_pick]);
+            printf("%d picked %f\n", ply, roster[roster_pick]);
 #endif
-         cur->pick(roster[roster_pick]);
-         roster_pick--;
+            cur->pick(roster[roster_pick]);
+            roster_pick--;
+         }
+         printf("\"Fair\" turn sequence result:\n");
+         printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
+         printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
       }
-      printf("\"Fair\" turn sequence result:\n");
-      printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
-      printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
-      players[0].reset();
-      players[1].reset();
-      roster_pick = ROSTER_SIZE - 1;
-      for (i32 i = 0; i < ROSTER_SIZE; i++) {
-         player * cur = players + (countbits(i + 42) % 2);
+      {
+         players[0].reset();
+         players[1].reset();
+         roster_pick = ROSTER_SIZE - 1;
+         for (i32 i = 0; i < ROSTER_SIZE; i++) {
+            u32 ply = (countbits(i + 42) % 2);
+            player * cur = players + ply;
 #if (ROSTER_SIZE <= 10)
-         printf("%d picked %f\n", i%2, roster[roster_pick]);
+            printf("%d picked %f\n", ply, roster[roster_pick]);
 #endif
-         cur->pick(roster[roster_pick]);
-         roster_pick--;
+            cur->pick(roster[roster_pick]);
+            roster_pick--;
+         }
+         printf("magic offset \"Fair\" turn sequence result:\n");
+         printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
+         printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
       }
-      printf("magic offset \"Fair\" turn sequence result:\n");
-      printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
-      printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
+      {
+         players[0].reset();
+         players[1].reset();
+         roster_pick = ROSTER_SIZE - 1;
+         i32 randadd;
+         for (i32 i = 0; i < ROSTER_SIZE; i++) {
+            if (i%2 == 0) {
+               randadd = rand()%2;
+            }
+            u32 ply = ((i + randadd) % 2);
+            player * cur = players + ply;
+#if (ROSTER_SIZE <= 10)
+            printf("%d picked %f\n", ply, roster[roster_pick]);
+#endif
+            cur->pick(roster[roster_pick]);
+            roster_pick--;
+         }
+         printf("random pair turn sequence result:\n");
+         printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
+         printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
+      }
    }
 }

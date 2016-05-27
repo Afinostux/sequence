@@ -103,6 +103,7 @@ int main(int argc, char ** argv)
          printf("Normal turn sequence result:\n");
          printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
          printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
+         printf("percent difference: %4.3f%%\n", 100.0 * (fabs(players[0].score - players[1].score)/roster_total));
       }
       {
          players[0].reset();
@@ -120,6 +121,7 @@ int main(int argc, char ** argv)
          printf("\"Fair\" turn sequence result:\n");
          printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
          printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
+         printf("percent difference: %4.3f%%\n", 100.0 * (fabs(players[0].score - players[1].score)/roster_total));
       }
       {
          players[0].reset();
@@ -137,6 +139,7 @@ int main(int argc, char ** argv)
          printf("magic offset \"Fair\" turn sequence result:\n");
          printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
          printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
+         printf("percent difference: %4.3f%%\n", 100.0 * (fabs(players[0].score - players[1].score)/roster_total));
       }
       {
          players[0].reset();
@@ -158,6 +161,33 @@ int main(int argc, char ** argv)
          printf("random pair turn sequence result:\n");
          printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
          printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
+         printf("percent difference: %4.3f%%\n", 100.0 * (fabs(players[0].score - players[1].score)/roster_total));
+      }
+      {
+         players[0].reset();
+         players[1].reset();
+         roster_pick = ROSTER_SIZE - 1;
+         i32 scoreadd;
+         for (i32 i = 0; i < ROSTER_SIZE; i++) {
+            if (i%2 == 0) {
+               if (players[0].score > players[1].score) {
+                  scoreadd = 1;
+               } else {
+                  scoreadd = 0;
+               }
+            }
+            u32 ply = ((i + scoreadd) % 2);
+            player * cur = players + ply;
+#if (ROSTER_SIZE <= 10)
+            printf("%d picked %f\n", ply, roster[roster_pick]);
+#endif
+            cur->pick(roster[roster_pick]);
+            roster_pick--;
+         }
+         printf("low-to-high pair turn sequence result:\n");
+         printf("player 1: %4.3f%% of points, %u turns\n", 100.0 * (players[0].score / roster_total), players[0].turns);
+         printf("player 2: %4.3f%% of points, %u turns\n", 100.0 * (players[1].score / roster_total), players[1].turns);
+         printf("percent difference: %4.3f%%\n", 100.0 * (fabs(players[0].score - players[1].score)/roster_total));
       }
    }
 }
